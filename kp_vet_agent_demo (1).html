@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KP Vet AI Agent Demo — by Anmol @just03things</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #f0f2f0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.demo-wrap { background: white; border-radius: 16px; padding: 24px; max-width: 420px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
+.demo-header { text-align: center; margin-bottom: 16px; }
+.brand-badge { display: inline-flex; align-items: center; gap: 6px; background: #2E7D32; color: white; font-size: 12px; font-weight: 600; padding: 5px 14px; border-radius: 20px; margin-bottom: 10px; }
+.demo-header h1 { font-size: 15px; font-weight: 600; color: #1a1a1a; margin-bottom: 4px; }
+.demo-header p { font-size: 11px; color: #666; }
+
+.lang-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; justify-content: center; }
+.lang-label { font-size: 11px; color: #666; font-weight: 500; }
+.lang-btn { padding: 5px 13px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1.5px solid #c8e6c9; background: white; color: #2E7D32; transition: all 0.15s; }
+.lang-btn.active { background: #2E7D32; color: white; border-color: #2E7D32; }
+
+.tabs { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.tab { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1.5px solid #c8e6c9; background: white; color: #2E7D32; transition: all 0.15s; }
+.tab.active { background: #2E7D32; color: white; border-color: #2E7D32; }
+
+.phone-frame { border-radius: 14px; overflow: hidden; border: 1px solid #e0e0e0; }
+.wa-header { background: #1B5E20; padding: 10px 14px; display: flex; align-items: center; gap: 10px; }
+.wa-avatar { width: 38px; height: 38px; border-radius: 50%; background: #43A047; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: white; flex-shrink: 0; }
+.wa-info h3 { font-size: 14px; font-weight: 600; color: white; }
+.wa-info p { font-size: 11px; color: #a5d6a7; }
+.online-dot { width: 7px; height: 7px; background: #69F0AE; border-radius: 50%; display: inline-block; margin-right: 4px; }
+
+.wa-body { background: #E8F5E9; min-height: 320px; max-height: 320px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 7px; }
+.msg { max-width: 84%; padding: 8px 11px; border-radius: 10px; font-size: 13px; line-height: 1.55; }
+.msg .time { font-size: 10px; color: rgba(0,0,0,0.38); text-align: right; margin-top: 3px; }
+.msg.user { background: white; align-self: flex-start; border-top-left-radius: 2px; color: #111; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+.msg.bot { background: #C8E6C9; align-self: flex-end; border-top-right-radius: 2px; color: #111; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+.typing-bubble { background: white; align-self: flex-start; padding: 10px 14px; border-radius: 10px; border-top-left-radius: 2px; display: none; gap: 4px; align-items: center; }
+.typing-bubble span { display: inline-block; width: 7px; height: 7px; background: #888; border-radius: 50%; animation: bounce 1.2s infinite; }
+.typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
+.typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+.label-chip { background: rgba(0,0,0,0.07); border-radius: 10px; font-size: 11px; color: #555; text-align: center; padding: 5px 12px; margin: 2px auto; max-width: 240px; }
+
+.quick-btns { display: flex; gap: 6px; padding: 8px 10px; background: #F1F8E9; flex-wrap: wrap; border-top: 1px solid #dcedc8; }
+.quick-btn { background: white; border: 1px solid #a5d6a7; border-radius: 14px; padding: 5px 11px; font-size: 11px; cursor: pointer; color: #1B5E20; font-weight: 600; }
+.quick-btn:hover { background: #e8f5e9; }
+
+.wa-input { background: #F1F8E9; padding: 8px 10px; display: flex; align-items: center; gap: 8px; border-top: 1px solid #dcedc8; }
+.wa-input input { flex: 1; background: white; border: 1px solid #ddd; border-radius: 22px; padding: 8px 14px; font-size: 13px; outline: none; font-family: inherit; }
+.wa-input input:focus { border-color: #43A047; }
+.send-btn { width: 38px; height: 38px; border-radius: 50%; background: #2E7D32; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.send-btn svg { width: 18px; height: 18px; fill: white; }
+
+.footer { text-align: center; font-size: 11px; color: #888; margin-top: 14px; padding-top: 14px; border-top: 1px solid #eee; line-height: 1.6; }
+.footer strong { color: #2E7D32; }
+</style>
+</head>
+<body>
+<div class="demo-wrap">
+  <div class="demo-header">
+    <div class="brand-badge">🐾 @_kp_027 AI Agent</div>
+    <h1>Your AI assistant — handles every follower DM instantly</h1>
+    <p>Built by Anmol · @just03things · 2 real use case scenarios</p>
+  </div>
+
+  <div class="lang-row">
+    <span class="lang-label">Language:</span>
+    <button class="lang-btn active" onclick="setLang('en')">English</button>
+    <button class="lang-btn" onclick="setLang('hi')">हिंदी</button>
+    <button class="lang-btn" onclick="setLang('hh')">Hinglish</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="loadScene('health')" id="tab-health">Scenario 1 — Health query</div>
+    <div class="tab" onclick="loadScene('product')" id="tab-product">Scenario 2 — Product advice</div>
+    <div class="tab" onclick="loadScene('live')" id="tab-live">Try it live</div>
+  </div>
+
+  <div class="phone-frame">
+    <div class="wa-header">
+      <div class="wa-avatar">KP</div>
+      <div class="wa-info">
+        <h3 id="agent-name">KP Vet AI Assistant</h3>
+        <p><span class="online-dot"></span><span id="agent-sub">Veterinary Creator · Always online</span></p>
+      </div>
+    </div>
+    <div class="wa-body" id="chat-body"></div>
+    <div class="quick-btns" id="quick-btns"></div>
+    <div class="wa-input" id="input-bar" style="display:none;">
+      <input type="text" id="user-input" placeholder="Type as a follower..." />
+      <button class="send-btn" onclick="sendLive()">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="footer" id="footer-text">
+    <strong>What this does for @_kp_027:</strong> Every animal health question, product query & appointment request gets an instant reply — even at 3am — without KP typing a single word.<br><br>
+    Demo by <strong>Anmol (@just03things)</strong> · AI Agent Services for Indian Creators
+  </div>
+</div>
+
+<script>
+let currentLang = 'en';
+let currentScene = 'health';
+let animating = false;
+
+const content = {
+  en: {
+    agentName: "KP Vet AI Assistant",
+    agentSub: "Veterinary Creator · Always online",
+    tabs: ["Scenario 1 — Health query", "Scenario 2 — Product advice", "Try it live"],
+    inputPlaceholder: "Type as a follower...",
+    footer: `<strong>What this does for @_kp_027:</strong> Every animal health question, product query & appointment request gets an instant reply — even at 3am — without KP typing a single word.<br><br>Demo by <strong>Anmol (@just03things)</strong> · AI Agent Services for Indian Creators`,
+    scenes: {
+      health: {
+        quick: ["My dog won't eat", "Cat fever symptoms?", "Puppy vaccine age?", "Dog vomiting — help!"],
+        msgs: [
+          { type: "label", text: "Follower DMs at midnight 🌙" },
+          { from: "user", text: "Hi KP sir, my dog hasn't eaten since 2 days and looks very weak. What should I do?" },
+          { from: "bot", text: "Hi! I'm KP sir's AI assistant 🐾\n\nIf your dog hasn't eaten for 2 days with weakness, watch for urgent signs:\n\n⚠️ See a vet IMMEDIATELY if:\n• Gums look pale or yellow\n• Vomiting or loose motion\n• Pain when you touch belly\n\nMeanwhile at home:\n✅ Offer plain boiled rice + chicken\n✅ Keep fresh water available always\n✅ No human medicines please\n\nHow old is your dog and what breed?" },
+          { from: "user", text: "He is 3 year old Labrador" },
+          { from: "bot", text: "Labradors at 3 years are strong, but 2 days without food is serious 🐶\n\nTop 3 likely causes:\n• Stomach infection\n• Swallowed something foreign\n• Tick fever (very common in India)\n\nKP sir's advice: Visit a vet TODAY. Don't wait.\n\nWant me to remind you to update us after the vet visit? KP sir reviews serious cases on his Sunday live at 8pm! 🎥" },
+          { from: "user", text: "Yes please! When is his next live?" },
+          { from: "bot", text: "Noted your case! 📋\n\nKP sir's weekly live:\n📅 Every Sunday, 8pm IST\n📍 Instagram Live @_kp_027\n\nTurn on post notifications so you don't miss it!\n\nYour dog will be okay — please act fast today 🙏" }
+        ]
+      },
+      product: {
+        quick: ["Best dog food brand?", "Tick treatment?", "Puppy shampoo?", "Cat food recommendation?"],
+        msgs: [
+          { type: "label", text: "Product recommendation request 🛒" },
+          { from: "user", text: "KP sir which dog food is best for Indian climate? My golden retriever has skin issues" },
+          { from: "bot", text: "Great question! 🐕 For Golden Retrievers with skin issues in Indian climate:\n\n🥇 Royal Canin Golden Retriever Adult\n🥈 Drools Focus Skin & Coat\n🥉 Pedigree Derma Defence\n\nCheck on the label:\n✅ Omega-3 & Omega-6 fatty acids\n✅ No artificial colours\n✅ Chicken or fish as 1st ingredient\n\nHow old is your golden?" },
+          { from: "user", text: "She is 2 years old" },
+          { from: "bot", text: "Perfect age — she needs adult formula now! 🐾\n\nKP sir's top pick: Royal Canin Golden Retriever Adult\n• Breed-specific formula\n• Best for skin & coat health\n• Available on Amazon India ₹3,500/12kg\n\nAlso add daily:\n💊 Fish oil capsule (Omega-3)\n🛁 Bath max once every 2 weeks\n\nKP sir has a full Reel on this — check 'Skin Care' in his highlights @_kp_027!" },
+          { from: "user", text: "Thank you so much!" },
+          { from: "bot", text: "You're welcome! 💛\n\nIf skin issues don't improve in 3 weeks after diet change, please visit a vet for allergy testing.\n\nFollow @_kp_027 for weekly pet care tips — your golden is lucky to have such a caring owner! 🐶" }
+        ]
+      },
+      live: {
+        quick: [],
+        msgs: [
+          { from: "bot", text: "Hi! I'm KP sir's AI assistant 🐾\n\nType anything — pretend you're a follower with an animal health question, product query, or any pet concern.\n\nI'll show you exactly how I reply on KP sir's behalf, 24/7 automatically!" }
+        ],
+        isLive: true
+      }
+    },
+    liveMap: {
+      "dog": "That's a common concern! Based on KP sir's experience, observe for 24 hours and ensure fresh water is available. If symptoms persist, visit a vet. What breed and age is your dog?",
+      "cat": "Cats hide symptoms well — KP sir always says this! Can you describe what you're noticing? I'll share the most relevant advice 🐱",
+      "food": "For Indian climate, KP sir recommends Omega-3 rich food with no artificial additives. Royal Canin and Drools are his top picks. What pet and breed do you have?",
+      "vaccine": "Vaccination schedule for puppies: 6 weeks, 9 weeks, 12 weeks, 16 weeks. KP sir has a detailed Reel on this — check his highlights @_kp_027!",
+      "sick": "Please share the symptoms — vomiting, not eating, lethargy, fever? I'll give first-aid advice and note your case for KP sir's Sunday live at 8pm IST 🙏",
+      "tick": "Tick fever is very common in India especially in monsoon! Signs: high fever, loss of appetite, weakness. See a vet immediately for a blood test.",
+      "hello": "Hi there! I'm KP sir's AI assistant 🐾 What can I help you with about your pet today?",
+      "hi": "Hello! Welcome 🐾 Ask me anything about your pet's health, food, or care!",
+      "default": "Great question! KP sir has covered this in detail. I've noted your query for his next Sunday live at 8pm IST. Follow @_kp_027 for daily pet care tips!"
+    }
+  },
+
+  hi: {
+    agentName: "KP वेट AI असिस्टेंट",
+    agentSub: "पशु चिकित्सा क्रिएटर · हमेशा ऑनलाइन",
+    tabs: ["परिदृश्य 1 — स्वास्थ्य प्रश्न", "परिदृश्य 2 — उत्पाद सलाह", "खुद आज़माएं"],
+    inputPlaceholder: "फॉलोअर की तरह टाइप करें...",
+    footer: `<strong>@_kp_027 के लिए यह क्या करता है:</strong> हर जानवर का स्वास्थ्य प्रश्न, उत्पाद क्वेरी और अपॉइंटमेंट अनुरोध — रात 3 बजे भी — तुरंत जवाब मिलता है, KP sir को कुछ भी टाइप नहीं करना पड़ता।<br><br>Demo by <strong>Anmol (@just03things)</strong> · भारतीय क्रिएटर्स के लिए AI Agent सेवाएं`,
+    scenes: {
+      health: {
+        quick: ["मेरा कुत्ता नहीं खा रहा", "बिल्ली को बुखार?", "पिल्ले का टीका कब?", "कुत्ता उल्टी कर रहा — मदद!"],
+        msgs: [
+          { type: "label", text: "रात को फॉलोअर का DM 🌙" },
+          { from: "user", text: "KP sir, मेरा कुत्ता 2 दिन से कुछ नहीं खा रहा और बहुत कमज़ोर लग रहा है। क्या करूं?" },
+          { from: "bot", text: "नमस्ते! मैं KP sir का AI असिस्टेंट हूं 🐾\n\n2 दिन से खाना न खाना और कमज़ोरी — ये ज़रूरी संकेत हैं:\n\n⚠️ तुरंत डॉक्टर के पास जाएं अगर:\n• मसूड़े पीले या सफ़ेद दिखें\n• उल्टी या दस्त हो\n• पेट छूने पर दर्द हो\n\nघर पर अभी करें:\n✅ उबला हुआ चावल + चिकन दें\n✅ ताज़ा पानी हमेशा रखें\n✅ कोई इंसानी दवा न दें\n\nकुत्ते की उम्र और नस्ल बताएं?" },
+          { from: "user", text: "3 साल का लैब्राडोर है" },
+          { from: "bot", text: "3 साल का लैब्राडोर — मज़बूत होता है, लेकिन 2 दिन का उपवास गंभीर है 🐶\n\n3 मुख्य कारण हो सकते हैं:\n• पेट का संक्रमण\n• कुछ निगल लिया हो\n• टिक बुखार (भारत में बहुत आम)\n\nKP sir की सलाह: आज ही डॉक्टर के पास जाएं।\n\nKP sir हर रविवार रात 8 बजे Live पर गंभीर केस देखते हैं! 🎥" },
+          { from: "user", text: "हां बताइए, Live कब होता है?" },
+          { from: "bot", text: "आपका केस नोट कर लिया! 📋\n\nKP sir का साप्ताहिक Live:\n📅 हर रविवार, रात 8 बजे IST\n📍 Instagram Live @_kp_027\n\nनोटिफिकेशन ऑन करें — एक भी Live मिस न हो!\n\nआपका कुत्ता ठीक हो जाएगा — बस आज ही एक्शन लें 🙏" }
+        ]
+      },
+      product: {
+        quick: ["सबसे अच्छा डॉग फूड?", "टिक का इलाज?", "पिल्ले का शैम्पू?", "बिल्ली के लिए खाना?"],
+        msgs: [
+          { type: "label", text: "उत्पाद सलाह का अनुरोध 🛒" },
+          { from: "user", text: "KP sir, भारतीय मौसम के लिए कौन सा डॉग फूड सबसे अच्छा है? मेरे गोल्डन की त्वचा में समस्या है" },
+          { from: "bot", text: "बहुत अच्छा सवाल! 🐕 भारतीय मौसम में त्वचा समस्या वाले Golden Retriever के लिए:\n\n🥇 Royal Canin Golden Retriever Adult\n🥈 Drools Focus Skin & Coat\n🥉 Pedigree Derma Defence\n\nलेबल पर देखें:\n✅ Omega-3 और Omega-6 फैटी एसिड\n✅ कोई कृत्रिम रंग नहीं\n✅ पहला तत्व चिकन या मछली हो\n\nगोल्डन की उम्र क्या है?" },
+          { from: "user", text: "2 साल की है" },
+          { from: "bot", text: "बिल्कुल सही उम्र — अब Adult फॉर्मूला चाहिए! 🐾\n\nKP sir की पहली पसंद: Royal Canin Golden Retriever Adult\n• नस्ल-विशेष फॉर्मूला\n• त्वचा और बाल के लिए बेहतरीन\n• Amazon India पर ₹3,500/12kg\n\nरोज़ाना ये भी दें:\n💊 मछली का तेल कैप्सूल (Omega-3)\n🛁 हर 2 हफ्ते में एक बार नहाएं\n\nKP sir के Highlights में 'Skin Care' देखें @_kp_027!" },
+          { from: "user", text: "बहुत बहुत धन्यवाद!" },
+          { from: "bot", text: "आपका स्वागत है! 💛\n\nअगर 3 हफ्ते बाद भी सुधार न हो, तो एलर्जी टेस्ट के लिए डॉक्टर के पास जाएं।\n\nहफ्तेभर की पेट केयर टिप्स के लिए @_kp_027 फॉलो करें 🐶" }
+        ]
+      },
+      live: {
+        quick: [],
+        msgs: [
+          { from: "bot", text: "नमस्ते! मैं KP sir का AI असिस्टेंट हूं 🐾\n\nकुछ भी पूछें — एक फॉलोअर की तरह पशु स्वास्थ्य, खाना या देखभाल से जुड़ा सवाल करें।\n\nमैं दिखाऊंगा कि KP sir की तरफ से 24/7 कैसे जवाब देता हूं!" }
+        ],
+        isLive: true
+      }
+    },
+    liveMap: {
+      "कुत्ता": "यह आम समस्या है! KP sir के अनुभव से — 24 घंटे देखें, ताज़ा पानी रखें। लक्षण बने रहें तो डॉक्टर के पास जाएं। कुत्ते की नस्ल और उम्र बताएं?",
+      "बिल्ली": "बिल्लियां लक्षण छुपाती हैं — KP sir हमेशा यही कहते हैं! क्या देख रहे हैं? सबसे सटीक सलाह दूंगा 🐱",
+      "खाना": "भारतीय मौसम के लिए KP sir Omega-3 युक्त खाना सुझाते हैं। Royal Canin और Drools उनकी टॉप पसंद है। आपका पालतू और नस्ल बताएं?",
+      "टीका": "पिल्लों का टीका: 6 हफ्ते, 9 हफ्ते, 12 हफ्ते, 16 हफ्ते। KP sir का विस्तृत Reel उनके Highlights में है @_kp_027!",
+      "बीमार": "लक्षण बताएं — उल्टी, खाना न खाना, सुस्ती, बुखार? प्राथमिक चिकित्सा सलाह दूंगा और KP sir के रविवार Live 8 बजे के लिए नोट करूंगा 🙏",
+      "नमस्ते": "नमस्ते! मैं KP sir का AI असिस्टेंट हूं 🐾 आज आपके पालतू के बारे में कैसे मदद करूं?",
+      "default": "बहुत अच्छा सवाल! KP sir ने इसे विस्तार से कवर किया है। आपकी क्वेरी रविवार Live 8 बजे के लिए नोट की। @_kp_027 फॉलो करें!"
+    }
+  },
+
+  hh: {
+    agentName: "KP Vet AI Assistant",
+    agentSub: "Vet Creator · Hamesha Online",
+    tabs: ["Scenario 1 — Health query", "Scenario 2 — Product advice", "Khud Try Karo"],
+    inputPlaceholder: "Follower ki tarah type karo...",
+    footer: `<strong>@_kp_027 ke liye kya karta hai:</strong> Har animal health question, product query aur appointment request ka — raat 3 baje bhi — turant jawab milta hai, KP sir ko kuch bhi type nahi karna padta.<br><br>Demo by <strong>Anmol (@just03things)</strong> · Indian Creators ke liye AI Agent Services`,
+    scenes: {
+      health: {
+        quick: ["Mera dog kha nahi raha", "Cat ko bukhar?", "Puppe ka tika kab?", "Dog ulti kar raha — help!"],
+        msgs: [
+          { type: "label", text: "Raat ko follower ka DM 🌙" },
+          { from: "user", text: "Hi KP sir, mera dog 2 din se kuch nahi kha raha aur bahut kamzor lag raha hai. Kya karoon?" },
+          { from: "bot", text: "Hi! Main KP sir ka AI assistant hoon 🐾\n\n2 din se khana nahi aur kamzori — ye zaruri signs hain:\n\n⚠️ Turant vet ke paas jao agar:\n• Masude pale ya peele dikhein\n• Ulti ya loose motion ho\n• Pet chhoone par dard ho\n\nGhar par abhi karo:\n✅ Ubla chawal + chicken do\n✅ Taza paani hamesha rakho\n✅ Koi insani dawai mat do\n\nDog ki umar aur nasl batao?" },
+          { from: "user", text: "3 saal ka Labrador hai" },
+          { from: "bot", text: "3 saal ka Labrador — strong hota hai, lekin 2 din ka upwas serious hai 🐶\n\nTop 3 possible reasons:\n• Pet ka infection\n• Kuch nigal liya ho\n• Tick bukhar (India mein bahut common)\n\nKP sir ki advice: Aaj hi vet ke paas jao. Wait mat karo.\n\nKP sir har Sunday raat 8 baje Live par serious cases dekhte hain! 🎥" },
+          { from: "user", text: "Haan batao, Live kab hota hai?" },
+          { from: "bot", text: "Aapka case note kar liya! 📋\n\nKP sir ka weekly Live:\n📅 Har Sunday, raat 8 baje IST\n📍 Instagram Live @_kp_027\n\nNotification on karo — ek bhi Live miss na ho!\n\nAapka dog theek ho jayega — bas aaj action lo 🙏" }
+        ]
+      },
+      product: {
+        quick: ["Best dog food konsa?", "Tick ka ilaaj?", "Puppe ka shampoo?", "Cat food recommendation?"],
+        msgs: [
+          { type: "label", text: "Product recommendation request 🛒" },
+          { from: "user", text: "KP sir, Indian climate ke liye konsa dog food best hai? Mere golden retriever ko skin issues hain" },
+          { from: "bot", text: "Bahut achha sawaal! 🐕 Indian climate mein skin problems wale Golden Retriever ke liye:\n\n🥇 Royal Canin Golden Retriever Adult\n🥈 Drools Focus Skin & Coat\n🥉 Pedigree Derma Defence\n\nLabel par check karo:\n✅ Omega-3 & Omega-6 fatty acids\n✅ Koi artificial colour nahi\n✅ Pehla ingredient chicken ya fish ho\n\nGolden ki umar kya hai?" },
+          { from: "user", text: "2 saal ki hai" },
+          { from: "bot", text: "Bilkul sahi umar — ab Adult formula chahiye! 🐾\n\nKP sir ki top pick: Royal Canin Golden Retriever Adult\n• Nasl-specific formula\n• Skin & coat ke liye best\n• Amazon India par ₹3,500/12kg\n\nRozmarra ye bhi do:\n💊 Fish oil capsule (Omega-3)\n🛁 Har 2 hafte mein ek baar nahao\n\nKP sir ke Highlights mein 'Skin Care' dekho @_kp_027!" },
+          { from: "user", text: "Bahut bahut shukriya!" },
+          { from: "bot", text: "Aapka swagat hai! 💛\n\nAgar 3 hafte baad bhi sudhaar na ho, toh allergy test ke liye vet ke paas jao.\n\nWeekly pet care tips ke liye @_kp_027 follow karo 🐶" }
+        ]
+      },
+      live: {
+        quick: [],
+        msgs: [
+          { from: "bot", text: "Hi! Main KP sir ka AI assistant hoon 🐾\n\nKuch bhi poochho — ek follower ki tarah animal health, food ya care se related sawaal karo.\n\nMain dikhaunga ki KP sir ki taraf se 24/7 kaise jawab deta hoon!" }
+        ],
+        isLive: true
+      }
+    },
+    liveMap: {
+      "dog": "Ye common problem hai! KP sir ke experience se — 24 ghante dekho, taza paani rakho. Symptoms rahe toh vet ke paas jao. Dog ki nasl aur umar batao?",
+      "cat": "Billi symptoms chhupati hai — KP sir hamesha yahi kehte hain! Kya dekh rahe ho? Sabse sahi advice dunga 🐱",
+      "food": "Indian climate ke liye KP sir Omega-3 wala khana suggest karte hain. Royal Canin aur Drools unki top picks hain. Aapka pet aur nasl batao?",
+      "vaccine": "Puppe ka tika schedule: 6 hafte, 9 hafte, 12 hafte, 16 hafte. KP sir ka detailed Reel unke Highlights mein hai @_kp_027!",
+      "bimar": "Symptoms batao — ulti, khana nahi, susti, bukhar? First aid advice dunga aur KP sir ke Sunday Live 8 baje ke liye note karunga 🙏",
+      "hello": "Hi! Main KP sir ka AI assistant hoon 🐾 Aaj aapke pet ke baare mein kaise help karoon?",
+      "hi": "Hello! Welcome 🐾 Pet ki health, food ya care ke baare mein kuch bhi poochho!",
+      "default": "Bahut achha sawaal! KP sir ne ise detail mein cover kiya hai. Aapki query Sunday Live 8 baje ke liye note ki. @_kp_027 follow karo!"
+    }
+  }
+};
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach((b, i) => {
+    b.classList.toggle('active', ['en','hi','hh'][i] === lang);
+  });
+  const c = content[lang];
+  document.getElementById('agent-name').textContent = c.agentName;
+  document.getElementById('agent-sub').textContent = c.agentSub;
+  document.getElementById('footer-text').innerHTML = c.footer;
+  document.getElementById('user-input').placeholder = c.inputPlaceholder;
+  const tabs = ['health','product','live'];
+  tabs.forEach((k, i) => {
+    document.getElementById('tab-' + k).textContent = c.tabs[i];
+  });
+  loadScene(currentScene);
+}
+
+function loadScene(key) {
+  if (animating) return;
+  currentScene = key;
+  const c = content[currentLang];
+  ['health','product','live'].forEach((k, i) => {
+    document.getElementById('tab-' + k).classList.toggle('active', k === key);
+  });
+  const s = c.scenes[key];
+  const body = document.getElementById('chat-body');
+  body.innerHTML = '';
+  const inputBar = document.getElementById('input-bar');
+  const quickBtns = document.getElementById('quick-btns');
+
+  if (s.isLive) {
+    inputBar.style.display = 'flex';
+    quickBtns.innerHTML = '';
+    showMsgs(s.msgs, 0, false);
+  } else {
+    inputBar.style.display = 'none';
+    quickBtns.innerHTML = s.quick.map(q =>
+      `<button class="quick-btn" onclick="tapQuick('${q}')">${q}</button>`
+    ).join('');
+    animating = true;
+    showMsgs(s.msgs, 0, true);
+  }
+}
+
+function showMsgs(msgs, idx, animate) {
+  if (idx >= msgs.length) { animating = false; return; }
+  const m = msgs[idx];
+  const body = document.getElementById('chat-body');
+  const delay = animate ? (m.type === 'label' ? 300 : m.from === 'bot' ? 700 : 400) : 0;
+  setTimeout(() => {
+    if (m.type === 'label') {
+      const d = document.createElement('div');
+      d.className = 'label-chip';
+      d.textContent = m.text;
+      body.appendChild(d);
+      body.scrollTop = body.scrollHeight;
+      showMsgs(msgs, idx + 1, animate);
+    } else if (m.from === 'bot' && animate) {
+      const t = document.createElement('div');
+      t.className = 'typing-bubble';
+      t.style.display = 'flex';
+      t.innerHTML = '<span></span><span></span><span></span>';
+      body.appendChild(t);
+      body.scrollTop = body.scrollHeight;
+      setTimeout(() => {
+        body.removeChild(t);
+        addMsg(m, body);
+        showMsgs(msgs, idx + 1, animate);
+      }, 1300);
+    } else {
+      addMsg(m, body);
+      showMsgs(msgs, idx + 1, animate);
+    }
+  }, delay);
+}
+
+function addMsg(m, body) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + m.from;
+  const now = new Date();
+  const t = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  div.innerHTML = m.text.replace(/\n/g, '<br>') + `<div class="time">${t}${m.from === 'bot' ? ' ✓✓' : ''}</div>`;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+
+function tapQuick(text) {
+  if (animating) return;
+  const body = document.getElementById('chat-body');
+  addMsg({ from: 'user', text }, body);
+  const t = document.createElement('div');
+  t.className = 'typing-bubble'; t.style.display = 'flex';
+  t.innerHTML = '<span></span><span></span><span></span>';
+  body.appendChild(t); body.scrollTop = body.scrollHeight;
+  const c = content[currentLang];
+  const reply = currentLang === 'en'
+    ? "Great question! Based on KP sir's experience — can you share your pet's breed and age so I give you the most accurate advice? 🐾"
+    : currentLang === 'hi'
+    ? "बहुत अच्छा सवाल! KP sir के अनुभव से — अपने पालतू की नस्ल और उम्र बताएं ताकि सटीक सलाह दे सकूं? 🐾"
+    : "Bahut achha sawaal! KP sir ke experience se — apne pet ki nasl aur umar batao taaki sahi advice de sakoon? 🐾";
+  setTimeout(() => {
+    body.removeChild(t);
+    addMsg({ from: 'bot', text: reply }, body);
+  }, 1300);
+}
+
+function sendLive() {
+  const input = document.getElementById('user-input');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  const body = document.getElementById('chat-body');
+  addMsg({ from: 'user', text }, body);
+  const t = document.createElement('div');
+  t.className = 'typing-bubble'; t.style.display = 'flex';
+  t.innerHTML = '<span></span><span></span><span></span>';
+  body.appendChild(t); body.scrollTop = body.scrollHeight;
+  setTimeout(() => {
+    body.removeChild(t);
+    const lower = text.toLowerCase();
+    const liveMap = content[currentLang].liveMap;
+    let reply = liveMap['default'];
+    for (const [k, v] of Object.entries(liveMap)) {
+      if (lower.includes(k)) { reply = v; break; }
+    }
+    addMsg({ from: 'bot', text: reply }, body);
+  }, 1400);
+}
+
+document.getElementById('user-input')?.addEventListener('keypress', e => {
+  if (e.key === 'Enter') sendLive();
+});
+
+loadScene('health');
+</script>
+</body>
+</html>
